@@ -43,36 +43,6 @@ A beautiful and challenging Sudoku game built with Flutter, featuring Material 3
 - Android Studio / VS Code
 - Android Emulator or Physical Device
 
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd sudoku_app
-   ```
-
-2. **Install dependencies**
-   ```bash
-   flutter pub get
-   ```
-
-3. **Run the app**
-   ```bash
-   flutter run
-   ```
-
-### Building for Production
-
-**Android APK:**
-```bash
-flutter build apk --release
-```
-
-**iOS:**
-```bash
-flutter build ios --release
-```
-
 ## Project Structure
 
 ```
@@ -91,13 +61,6 @@ lib/
     ├── sudoku_grid.dart     # 9x9 Sudoku grid
     └── number_pad.dart      # Number input pad
 ```
-
-## Dependencies
-
-- **provider**: ^6.1.1 - State management
-- **flutter**: SDK - UI framework
-- **cupertino_icons**: ^1.0.2 - iOS-style icons
-
 ## How to Play
 
 1. **Select Difficulty**: Choose Easy, Medium, or Hard from the main menu
@@ -111,21 +74,3 @@ lib/
    - Use the "Clear" button to remove a number
    - Use "Undo" to step back through your moves
 4. **Complete the Puzzle**: Fill all cells correctly to win!
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Flutter team for the amazing framework
-- Material Design team for the design system
-- Sudoku puzzle generation algorithms
