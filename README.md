@@ -43,36 +43,6 @@ A beautiful and challenging Sudoku game built with Flutter, featuring Material 3
 - Android Studio / VS Code
 - Android Emulator or Physical Device
 
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd sudoku_app
-   ```
-
-2. **Install dependencies**
-   ```bash
-   flutter pub get
-   ```
-
-3. **Run the app**
-   ```bash
-   flutter run
-   ```
-
-### Building for Production
-
-**Android APK:**
-```bash
-flutter build apk --release
-```
-
-**iOS:**
-```bash
-flutter build ios --release
-```
-
 ## Project Structure
 
 ```
