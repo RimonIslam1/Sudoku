@@ -14,14 +14,16 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   int? selectedRow;
   int? selectedCol;
+  bool notesMode = false;
 
   @override
   Widget build(BuildContext context) {
     // Debug: Print current game state
     final gameProvider = Provider.of<GameProvider>(context);
     print('Game Screen - Difficulty: ${gameProvider.difficulty}');
-    print('Game Screen - Board has data: ${gameProvider.board.any((row) => row.any((cell) => cell != 0))}');
-    
+    print(
+        'Game Screen - Board has data: ${gameProvider.board.any((row) => row.any((cell) => cell != 0))}');
+
     return Scaffold(
       appBar: AppBar(
         title: Consumer<GameProvider>(
@@ -82,14 +84,25 @@ class _GameScreenState extends State<GameScreen> {
               NumberPad(
                 onNumberSelected: (number) {
                   if (selectedRow != null && selectedCol != null) {
-                    final gameProvider = Provider.of<GameProvider>(context, listen: false);
-                    gameProvider.makeMove(selectedRow!, selectedCol!, number);
+                    final gameProvider =
+                        Provider.of<GameProvider>(context, listen: false);
+                    if (notesMode) {
+                      gameProvider.toggleCandidate(
+                          selectedRow!, selectedCol!, number);
+                    } else {
+                      gameProvider.makeMove(selectedRow!, selectedCol!, number);
+                    }
                   }
                 },
                 onClear: () {
                   if (selectedRow != null && selectedCol != null) {
-                    final gameProvider = Provider.of<GameProvider>(context, listen: false);
-                    gameProvider.makeMove(selectedRow!, selectedCol!, 0);
+                    final gameProvider =
+                        Provider.of<GameProvider>(context, listen: false);
+                    if (notesMode) {
+                      gameProvider.clearCandidates(selectedRow!, selectedCol!);
+                    } else {
+                      gameProvider.makeMove(selectedRow!, selectedCol!, 0);
+                    }
                   }
                 },
               ),
@@ -140,14 +153,18 @@ class _GameScreenState extends State<GameScreen> {
                     'Moves: ${gameProvider.moveHistory.length}',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6),
                     ),
                   ),
                 ],
               ),
               if (gameProvider.isGameComplete)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.green,
                     borderRadius: BorderRadius.circular(20),
@@ -207,6 +224,25 @@ class _GameScreenState extends State<GameScreen> {
             child: ElevatedButton.icon(
               onPressed: () {
                 setState(() {
+                  notesMode = !notesMode;
+                });
+              },
+              icon: Icon(notesMode ? Icons.edit_off : Icons.edit),
+              label: Text(notesMode ? 'Notes: On' : 'Notes: Off'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                backgroundColor: notesMode ? Colors.amber : null,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 15),
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: () {
+                setState(() {
                   selectedRow = null;
                   selectedCol = null;
                 });
@@ -216,6 +252,30 @@ class _GameScreenState extends State<GameScreen> {
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 backgroundColor: Colors.grey,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 15),
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: () {
+                final gameProvider =
+                    Provider.of<GameProvider>(context, listen: false);
+                if (selectedRow != null && selectedCol != null) {
+                  gameProvider.provideHintAt(selectedRow!, selectedCol!);
+                } else {
+                  gameProvider.provideRandomHint();
+                }
+              },
+              icon: const Icon(Icons.lightbulb),
+              label: const Text('Hint'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                backgroundColor: Colors.lightBlue,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -234,7 +294,8 @@ class _GameScreenState extends State<GameScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Reset Game'),
-          content: const Text('Are you sure you want to reset the current game?'),
+          content:
+              const Text('Are you sure you want to reset the current game?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -242,7 +303,8 @@ class _GameScreenState extends State<GameScreen> {
             ),
             TextButton(
               onPressed: () {
-                final gameProvider = Provider.of<GameProvider>(context, listen: false);
+                final gameProvider =
+                    Provider.of<GameProvider>(context, listen: false);
                 gameProvider.resetGame();
                 setState(() {
                   selectedRow = null;

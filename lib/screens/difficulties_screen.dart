@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sudoku_app/providers/game_provider.dart';
-import 'package:sudoku_app/screens/game_screen.dart';
+import 'package:sudoku_app/screens/puzzle_selection_screen.dart';
 
 class DifficultiesScreen extends StatelessWidget {
   const DifficultiesScreen({super.key});
@@ -43,7 +43,10 @@ class DifficultiesScreen extends StatelessWidget {
                   'Choose the challenge that suits you best',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.7),
                   ),
                 ),
                 const SizedBox(height: 60),
@@ -57,7 +60,7 @@ class DifficultiesScreen extends StatelessWidget {
                         Icons.sentiment_satisfied,
                         Colors.green,
                         'Perfect for beginners',
-                        () => _startGame(context, 'Easy'),
+                        () => _goToPuzzleSelection(context, 'Easy'),
                       ),
                       const SizedBox(height: 20),
                       _buildDifficultyButton(
@@ -66,7 +69,7 @@ class DifficultiesScreen extends StatelessWidget {
                         Icons.sentiment_neutral,
                         Colors.orange,
                         'For experienced players',
-                        () => _startGame(context, 'Medium'),
+                        () => _goToPuzzleSelection(context, 'Medium'),
                       ),
                       const SizedBox(height: 20),
                       _buildDifficultyButton(
@@ -75,7 +78,7 @@ class DifficultiesScreen extends StatelessWidget {
                         Icons.sentiment_dissatisfied,
                         Colors.red,
                         'For Sudoku masters',
-                        () => _startGame(context, 'Hard'),
+                        () => _goToPuzzleSelection(context, 'Hard'),
                       ),
                     ],
                   ),
@@ -155,7 +158,10 @@ class DifficultiesScreen extends StatelessWidget {
                         description,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.6),
                         ),
                       ),
                     ],
@@ -173,14 +179,13 @@ class DifficultiesScreen extends StatelessWidget {
     );
   }
 
-  void _startGame(BuildContext context, String difficulty) {
+  void _goToPuzzleSelection(BuildContext context, String difficulty) {
     final gameProvider = Provider.of<GameProvider>(context, listen: false);
     gameProvider.setDifficulty(difficulty);
-    
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const GameScreen(),
+        builder: (context) => PuzzleSelectionScreen(difficulty: difficulty),
       ),
     );
   }

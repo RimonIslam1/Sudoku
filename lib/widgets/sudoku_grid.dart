@@ -19,14 +19,15 @@ class SudokuGrid extends StatelessWidget {
     return Consumer<GameProvider>(
       builder: (context, gameProvider, child) {
         // Debug: Check if board has data
-        bool hasData = gameProvider.board.any((row) => row.any((cell) => cell != 0));
+        bool hasData =
+            gameProvider.board.any((row) => row.any((cell) => cell != 0));
         print('SudokuGrid - Board has data: $hasData');
-        
+
         // If no data, show a test grid
         if (!hasData) {
           print('No data in board, showing test grid');
         }
-        
+
         return Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -63,13 +64,15 @@ class SudokuGrid extends StatelessWidget {
     );
   }
 
-  Widget _buildCell(BuildContext context, int row, int col, GameProvider gameProvider) {
+  Widget _buildCell(
+      BuildContext context, int row, int col, GameProvider gameProvider) {
     final value = gameProvider.board[row][col];
     final isOriginal = gameProvider.isOriginalCell(row, col);
     final isSelected = selectedRow == row && selectedCol == col;
     final isInSameRow = selectedRow == row;
     final isInSameCol = selectedCol == col;
     final isInSameBox = _isInSameBox(row, col, selectedRow, selectedCol);
+    final cellCandidates = gameProvider.getCandidates(row, col);
 
     Color backgroundColor = Colors.white;
     if (isSelected) {
@@ -87,11 +90,15 @@ class SudokuGrid extends StatelessWidget {
         color: backgroundColor,
         border: Border(
           right: BorderSide(
-            color: (col + 1) % 3 == 0 ? Colors.black : Colors.grey.withOpacity(0.3),
+            color: (col + 1) % 3 == 0
+                ? Colors.black
+                : Colors.grey.withOpacity(0.3),
             width: (col + 1) % 3 == 0 ? 2 : 1,
           ),
           bottom: BorderSide(
-            color: (row + 1) % 3 == 0 ? Colors.black : Colors.grey.withOpacity(0.3),
+            color: (row + 1) % 3 == 0
+                ? Colors.black
+                : Colors.grey.withOpacity(0.3),
             width: (row + 1) % 3 == 0 ? 2 : 1,
           ),
         ),
@@ -102,19 +109,13 @@ class SudokuGrid extends StatelessWidget {
           onTap: () => onCellSelected(row, col),
           child: Center(
             child: value == 0
-                ? Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  )
+                ? _buildCandidatesView(context, cellCandidates)
                 : Text(
                     value.toString(),
                     style: TextStyle(
                       fontSize: 20,
-                      fontWeight: isOriginal ? FontWeight.bold : FontWeight.normal,
+                      fontWeight:
+                          isOriginal ? FontWeight.bold : FontWeight.normal,
                       color: isOriginal
                           ? Theme.of(context).colorScheme.primary
                           : Theme.of(context).colorScheme.onSurface,
@@ -128,12 +129,46 @@ class SudokuGrid extends StatelessWidget {
 
   bool _isInSameBox(int row1, int col1, int? row2, int? col2) {
     if (row2 == null || col2 == null) return false;
-    
+
     int boxRow1 = row1 ~/ 3;
     int boxCol1 = col1 ~/ 3;
     int boxRow2 = row2 ~/ 3;
     int boxCol2 = col2 ~/ 3;
-    
+
     return boxRow1 == boxRow2 && boxCol1 == boxCol2;
+  }
+
+  Widget _buildCandidatesView(BuildContext context, Set<int> candidates) {
+    // 3x3 tiny grid of candidate digits 1-9
+    return Padding(
+      padding: const EdgeInsets.all(2.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(3, (r) {
+          return Expanded(
+            child: Row(
+              children: List.generate(3, (c) {
+                final digit = r * 3 + c + 1;
+                final present = candidates.contains(digit);
+                return Expanded(
+                  child: Center(
+                    child: present
+                        ? Text(
+                            '$digit',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+                );
+              }),
+            ),
+          );
+        }),
+      ),
+    );
   }
 }

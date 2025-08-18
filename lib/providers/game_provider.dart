@@ -8,6 +8,7 @@ class GameProvider extends ChangeNotifier {
   List<Move> _moveHistory = [];
   String _difficulty = 'Easy';
   bool _isGameComplete = false;
+  late List<List<Set<int>>> _candidates;
 
   GameProvider() {
     _generateNewGame();
@@ -19,6 +20,7 @@ class GameProvider extends ChangeNotifier {
   List<Move> get moveHistory => _moveHistory;
   String get difficulty => _difficulty;
   bool get isGameComplete => _isGameComplete;
+  List<List<Set<int>>> get candidates => _candidates;
 
   void setDifficulty(String difficulty) {
     _difficulty = difficulty;
@@ -31,6 +33,7 @@ class GameProvider extends ChangeNotifier {
     _createPuzzle();
     _moveHistory.clear();
     _isGameComplete = false;
+    _initCandidates();
     notifyListeners();
   }
 
@@ -131,7 +134,7 @@ class GameProvider extends ChangeNotifier {
         removed++;
       }
     }
-    
+
     // Debug: Print the board to console
     print('Generated Sudoku Board:');
     for (int i = 0; i < 9; i++) {
@@ -144,9 +147,12 @@ class GameProvider extends ChangeNotifier {
 
     int previousValue = _board[row][col];
     _board[row][col] = value;
-    
+    if (value != 0) {
+      _candidates[row][col].clear();
+    }
+
     _moveHistory.add(Move(row, col, previousValue, value));
-    
+
     _checkGameComplete();
     notifyListeners();
   }
@@ -156,7 +162,7 @@ class GameProvider extends ChangeNotifier {
 
     Move lastMove = _moveHistory.removeLast();
     _board[lastMove.row][lastMove.col] = lastMove.previousValue;
-    
+
     _checkGameComplete();
     notifyListeners();
   }
@@ -181,6 +187,68 @@ class GameProvider extends ChangeNotifier {
     _board = List.generate(9, (i) => List.from(_originalBoard[i]));
     _moveHistory.clear();
     _isGameComplete = false;
+    _initCandidates();
+    notifyListeners();
+  }
+
+  void _initCandidates() {
+    _candidates =
+        List.generate(9, (_) => List.generate(9, (_) => <int>{}.toSet()));
+  }
+
+  void toggleCandidate(int row, int col, int number) {
+    if (isOriginalCell(row, col)) return;
+    final cellCandidates = _candidates[row][col];
+    if (cellCandidates.contains(number)) {
+      cellCandidates.remove(number);
+    } else {
+      cellCandidates.add(number);
+    }
+    notifyListeners();
+  }
+
+  Set<int> getCandidates(int row, int col) {
+    return _candidates[row][col];
+  }
+
+  void clearCandidates(int row, int col) {
+    _candidates[row][col].clear();
+    notifyListeners();
+  }
+
+  bool provideHintAt(int row, int col) {
+    if (isOriginalCell(row, col)) return false;
+    if (_solution[row][col] == 0) return false;
+    final correctValue = _solution[row][col];
+    if (_board[row][col] == correctValue) return false;
+    makeMove(row, col, correctValue);
+    return true;
+  }
+
+  bool provideRandomHint() {
+    final List<Point> empties = [];
+    for (int r = 0; r < 9; r++) {
+      for (int c = 0; c < 9; c++) {
+        if (!isOriginalCell(r, c) && _board[r][c] != _solution[r][c]) {
+          empties.add(Point(r, c));
+        }
+      }
+    }
+    if (empties.isEmpty) return false;
+    final random = Random();
+    final p = empties[random.nextInt(empties.length)];
+    return provideHintAt(p.row, p.col);
+  }
+
+  void loadPuzzle(
+      List<List<int>> board, List<List<int>> solution, String difficulty) {
+    _difficulty = difficulty;
+    _solution = List.generate(9, (i) => List.from(solution[i]));
+    _board = List.generate(9, (i) => List.from(board[i]));
+    _originalBoard = List.generate(9, (i) => List.from(board[i]));
+    _moveHistory.clear();
+    _isGameComplete = false;
+    _initCandidates();
     notifyListeners();
   }
 }
@@ -192,4 +260,10 @@ class Move {
   final int newValue;
 
   Move(this.row, this.col, this.previousValue, this.newValue);
+}
+
+class Point {
+  final int row;
+  final int col;
+  const Point(this.row, this.col);
 }

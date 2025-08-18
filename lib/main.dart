@@ -27,15 +27,15 @@ class SudokuApp extends StatelessWidget {
               useMaterial3: true,
               colorScheme: ColorScheme.fromSeed(
                 seedColor: themeProvider.primaryColor,
-                brightness: themeProvider.isDarkMode ? Brightness.dark : Brightness.light,
+                brightness: themeProvider.isDarkMode
+                    ? Brightness.dark
+                    : Brightness.light,
               ),
               appBarTheme: AppBarTheme(
-                backgroundColor: themeProvider.isDarkMode 
-                    ? Colors.grey[900] 
-                    : Colors.white,
-                foregroundColor: themeProvider.isDarkMode 
-                    ? Colors.white 
-                    : Colors.black,
+                backgroundColor:
+                    themeProvider.isDarkMode ? Colors.grey[900] : Colors.white,
+                foregroundColor:
+                    themeProvider.isDarkMode ? Colors.white : Colors.black,
                 elevation: 0,
               ),
             ),
