@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sudoku_app/screens/difficulties_screen.dart';
 import 'package:sudoku_app/screens/settings_screen.dart';
+import 'package:sudoku_app/screens/rules_screen.dart';
+import 'package:sudoku_app/screens/techniques_screen.dart';
 
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({super.key});
@@ -56,6 +58,30 @@ class MainMenuScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const DifficultiesScreen(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildMenuButton(
+                      context,
+                      'Rules',
+                      Icons.rule,
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RulesScreen(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildMenuButton(
+                      context,
+                      'Solving Techniques',
+                      Icons.lightbulb_outline,
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TechniquesScreen(),
                         ),
                       ),
                     ),

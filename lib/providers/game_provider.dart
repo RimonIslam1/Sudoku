@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'dart:async';
 
 class GameProvider extends ChangeNotifier {
   List<List<int>> _board = List.generate(9, (_) => List.filled(9, 0));
@@ -9,6 +10,12 @@ class GameProvider extends ChangeNotifier {
   String _difficulty = 'Easy';
   bool _isGameComplete = false;
   late List<List<Set<int>>> _candidates;
+
+  // Timer functionality
+  Timer? _timer;
+  Duration _elapsedTime = Duration.zero;
+  bool _isTimerRunning = false;
+  bool _hasGameStarted = false;
 
   GameProvider() {
     _generateNewGame();
@@ -21,6 +28,27 @@ class GameProvider extends ChangeNotifier {
   String get difficulty => _difficulty;
   bool get isGameComplete => _isGameComplete;
   List<List<Set<int>>> get candidates => _candidates;
+  Duration get elapsedTime => _elapsedTime;
+  bool get isTimerRunning => _isTimerRunning;
+  bool get hasGameStarted => _hasGameStarted;
+
+  // Get digit counts (excluding candidates)
+  Map<int, int> get digitCounts {
+    Map<int, int> counts = {};
+    for (int i = 1; i <= 9; i++) {
+      counts[i] = 0;
+    }
+
+    for (int row = 0; row < 9; row++) {
+      for (int col = 0; col < 9; col++) {
+        int value = _board[row][col];
+        if (value > 0) {
+          counts[value] = (counts[value] ?? 0) + 1;
+        }
+      }
+    }
+    return counts;
+  }
 
   void setDifficulty(String difficulty) {
     _difficulty = difficulty;
@@ -34,6 +62,7 @@ class GameProvider extends ChangeNotifier {
     _moveHistory.clear();
     _isGameComplete = false;
     _initCandidates();
+    _resetTimer();
     notifyListeners();
   }
 
@@ -145,6 +174,11 @@ class GameProvider extends ChangeNotifier {
   void makeMove(int row, int col, int value) {
     if (_originalBoard[row][col] != 0) return; // Can't edit original numbers
 
+    // Start timer on first move
+    if (!_hasGameStarted && value != 0) {
+      startGame();
+    }
+
     int previousValue = _board[row][col];
     _board[row][col] = value;
     if (value != 0) {
@@ -177,6 +211,10 @@ class GameProvider extends ChangeNotifier {
       }
     }
     _isGameComplete = true;
+    // Stop timer when game is complete
+    if (_isGameComplete) {
+      _stopTimer();
+    }
   }
 
   bool isOriginalCell(int row, int col) {
@@ -250,6 +288,62 @@ class GameProvider extends ChangeNotifier {
     _isGameComplete = false;
     _initCandidates();
     notifyListeners();
+  }
+
+  // Timer methods
+  void _resetTimer() {
+    _stopTimer();
+    _elapsedTime = Duration.zero;
+    _hasGameStarted = false;
+    _isTimerRunning = false;
+  }
+
+  void _startTimer() {
+    if (!_isTimerRunning) {
+      _isTimerRunning = true;
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        _elapsedTime += const Duration(seconds: 1);
+        notifyListeners();
+      });
+    }
+  }
+
+  void _stopTimer() {
+    _timer?.cancel();
+    _isTimerRunning = false;
+  }
+
+  void _pauseTimer() {
+    _stopTimer();
+  }
+
+  void startGame() {
+    if (!_hasGameStarted) {
+      _hasGameStarted = true;
+      _startTimer();
+    }
+  }
+
+  void pauseGame() {
+    _pauseTimer();
+  }
+
+  void resumeGame() {
+    if (_hasGameStarted && !_isGameComplete) {
+      _startTimer();
+    }
+  }
+
+  String get formattedTime {
+    int hours = _elapsedTime.inHours;
+    int minutes = _elapsedTime.inMinutes.remainder(60);
+    int seconds = _elapsedTime.inSeconds.remainder(60);
+
+    if (hours > 0) {
+      return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+    } else {
+      return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+    }
   }
 }
 

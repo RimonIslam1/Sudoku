@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sudoku_app/providers/game_provider.dart';
 import 'package:sudoku_app/widgets/sudoku_grid.dart';
-import 'package:sudoku_app/widgets/number_pad.dart';
+import 'package:sudoku_app/widgets/digit_row.dart';
+import 'package:sudoku_app/widgets/action_buttons.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
@@ -14,16 +15,11 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   int? selectedRow;
   int? selectedCol;
+  int? selectedDigit;
   bool notesMode = false;
 
   @override
   Widget build(BuildContext context) {
-    // Debug: Print current game state
-    final gameProvider = Provider.of<GameProvider>(context);
-    print('Game Screen - Difficulty: ${gameProvider.difficulty}');
-    print(
-        'Game Screen - Board has data: ${gameProvider.board.any((row) => row.any((cell) => cell != 0))}');
-
     return Scaffold(
       appBar: AppBar(
         title: Consumer<GameProvider>(
@@ -60,11 +56,13 @@ class _GameScreenState extends State<GameScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // Game Info
-              _buildGameInfo(),
-              const SizedBox(height: 20),
-              // Sudoku Grid
+              // Timer Section
+              _buildTimerSection(),
+              const SizedBox(height: 16),
+
+              // Sudoku Grid (65% of upper screen)
               Expanded(
+                flex: 65,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: SudokuGrid(
@@ -75,40 +73,93 @@ class _GameScreenState extends State<GameScreen> {
                         selectedRow = row;
                         selectedCol = col;
                       });
+
+                      // Fill cell with selected digit if available
+                      if (selectedDigit != null) {
+                        final gameProvider =
+                            Provider.of<GameProvider>(context, listen: false);
+                        if (notesMode) {
+                          gameProvider.toggleCandidate(
+                              row, col, selectedDigit!);
+                        } else {
+                          gameProvider.makeMove(row, col, selectedDigit!);
+                        }
+                        setState(() {
+                          selectedDigit = null; // Clear selection after use
+                        });
+                      }
                     },
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              // Number Pad
-              NumberPad(
-                onNumberSelected: (number) {
-                  if (selectedRow != null && selectedCol != null) {
-                    final gameProvider =
-                        Provider.of<GameProvider>(context, listen: false);
-                    if (notesMode) {
-                      gameProvider.toggleCandidate(
-                          selectedRow!, selectedCol!, number);
-                    } else {
-                      gameProvider.makeMove(selectedRow!, selectedCol!, number);
-                    }
-                  }
-                },
-                onClear: () {
-                  if (selectedRow != null && selectedCol != null) {
-                    final gameProvider =
-                        Provider.of<GameProvider>(context, listen: false);
-                    if (notesMode) {
-                      gameProvider.clearCandidates(selectedRow!, selectedCol!);
-                    } else {
-                      gameProvider.makeMove(selectedRow!, selectedCol!, 0);
-                    }
-                  }
-                },
+
+              const SizedBox(height: 16),
+
+              // Digit Buttons Row
+              Container(
+                height: 70,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: DigitRow(
+                  onDigitSelected: (digit) {
+                    setState(() {
+                      selectedDigit = digit;
+                    });
+                  },
+                  selectedDigit: selectedDigit,
+                ),
               ),
-              const SizedBox(height: 20),
+
+              const SizedBox(height: 16),
+
               // Action Buttons
-              _buildActionButtons(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ActionButtons(
+                  onUndo: () {
+                    final gameProvider =
+                        Provider.of<GameProvider>(context, listen: false);
+                    gameProvider.undoMove();
+                    setState(() {
+                      selectedDigit = null;
+                    });
+                  },
+                  onHint: () {
+                    final gameProvider =
+                        Provider.of<GameProvider>(context, listen: false);
+                    if (selectedRow != null && selectedCol != null) {
+                      gameProvider.provideHintAt(selectedRow!, selectedCol!);
+                    } else {
+                      gameProvider.provideRandomHint();
+                    }
+                    setState(() {
+                      selectedDigit = null;
+                    });
+                  },
+                  onNotesToggle: () {
+                    setState(() {
+                      notesMode = !notesMode;
+                      selectedDigit = null;
+                    });
+                  },
+                  onClear: () {
+                    if (selectedRow != null && selectedCol != null) {
+                      final gameProvider =
+                          Provider.of<GameProvider>(context, listen: false);
+                      if (notesMode) {
+                        gameProvider.clearCandidates(
+                            selectedRow!, selectedCol!);
+                      } else {
+                        gameProvider.makeMove(selectedRow!, selectedCol!, 0);
+                      }
+                    }
+                    setState(() {
+                      selectedDigit = null;
+                    });
+                  },
+                  notesMode: notesMode,
+                ),
+              ),
+
               const SizedBox(height: 20),
             ],
           ),
@@ -117,12 +168,12 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _buildGameInfo() {
+  Widget _buildTimerSection() {
     return Consumer<GameProvider>(
       builder: (context, gameProvider, child) {
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
-          padding: const EdgeInsets.all(15),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
@@ -137,18 +188,29 @@ class _GameScreenState extends State<GameScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              // Timer
+              Row(
                 children: [
+                  Icon(
+                    Icons.timer,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
                   Text(
-                    'Difficulty: ${gameProvider.difficulty}',
+                    gameProvider.formattedTime,
                     style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
-                  const SizedBox(height: 5),
+                ],
+              ),
+
+              // Game Status
+              Row(
+                children: [
                   Text(
                     'Moves: ${gameProvider.moveHistory.length}',
                     style: TextStyle(
@@ -156,135 +218,45 @@ class _GameScreenState extends State<GameScreen> {
                       color: Theme.of(context)
                           .colorScheme
                           .onSurface
-                          .withOpacity(0.6),
+                          .withOpacity(0.7),
                     ),
                   ),
+                  if (gameProvider.isGameComplete) ...[
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.white,
+                            size: 14,
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            'Complete!',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
-              if (gameProvider.isGameComplete)
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.check_circle,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        'Complete!',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
             ],
           ),
         );
       },
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
-          Expanded(
-            child: Consumer<GameProvider>(
-              builder: (context, gameProvider, child) {
-                return ElevatedButton.icon(
-                  onPressed: gameProvider.moveHistory.isEmpty
-                      ? null
-                      : () => gameProvider.undoMove(),
-                  icon: const Icon(Icons.undo),
-                  label: const Text('Undo'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: ElevatedButton.icon(
-              onPressed: () {
-                setState(() {
-                  notesMode = !notesMode;
-                });
-              },
-              icon: Icon(notesMode ? Icons.edit_off : Icons.edit),
-              label: Text(notesMode ? 'Notes: On' : 'Notes: Off'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                backgroundColor: notesMode ? Colors.amber : null,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: ElevatedButton.icon(
-              onPressed: () {
-                setState(() {
-                  selectedRow = null;
-                  selectedCol = null;
-                });
-              },
-              icon: const Icon(Icons.clear),
-              label: const Text('Clear Selection'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                backgroundColor: Colors.grey,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: ElevatedButton.icon(
-              onPressed: () {
-                final gameProvider =
-                    Provider.of<GameProvider>(context, listen: false);
-                if (selectedRow != null && selectedCol != null) {
-                  gameProvider.provideHintAt(selectedRow!, selectedCol!);
-                } else {
-                  gameProvider.provideRandomHint();
-                }
-              },
-              icon: const Icon(Icons.lightbulb),
-              label: const Text('Hint'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                backgroundColor: Colors.lightBlue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -309,6 +281,7 @@ class _GameScreenState extends State<GameScreen> {
                 setState(() {
                   selectedRow = null;
                   selectedCol = null;
+                  selectedDigit = null;
                 });
                 Navigator.of(context).pop();
               },
