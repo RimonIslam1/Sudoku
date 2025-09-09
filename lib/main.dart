@@ -36,7 +36,7 @@ class SudokuApp extends StatelessWidget {
                     themeProvider.isDarkMode ? Colors.grey[900] : Colors.white,
                 foregroundColor:
                     themeProvider.isDarkMode ? Colors.white : Colors.black,
-                elevation: 0,
+                elevation: 0, // You can use scrolledUnderElevation for Material 3
               ),
             ),
             home: const SplashScreen(),
