@@ -143,10 +143,20 @@ class _PuzzleSelectionScreenState extends State<PuzzleSelectionScreen> {
     final List<_PuzzleItem> out = [];
     for (int i = 0; i < 10; i++) {
       final seed = seeds[i % seeds.length];
-      out.add(_PuzzleItem(
-        board: _stringToBoard(seed.board),
-        solution: _stringToBoard(seed.solution),
-      ));
+      // For Easy difficulty, ensure the first 5 puzzles have exactly 10 empty cells
+      if (difficulty == 'Easy' && i < 5) {
+        final solved = _stringToBoard(seed.solution);
+        final boardWithTenEmpties = _maskTenCells(solved);
+        out.add(_PuzzleItem(
+          board: boardWithTenEmpties,
+          solution: solved,
+        ));
+      } else {
+        out.add(_PuzzleItem(
+          board: _stringToBoard(seed.board),
+          solution: _stringToBoard(seed.solution),
+        ));
+      }
     }
     return out;
   }
@@ -162,6 +172,29 @@ class _PuzzleSelectionScreenState extends State<PuzzleSelectionScreen> {
       }
     }
     return b;
+  }
+
+  // Create a very easy puzzle by masking exactly 10 cells from a solved grid
+  // Fixed positions to keep difficulty low and ensure quick solvability
+  List<List<int>> _maskTenCells(List<List<int>> solved) {
+    final List<List<int>> board =
+        List.generate(9, (r) => List<int>.from(solved[r]));
+    const List<List<int>> positions = [
+      [0, 0],
+      [0, 4],
+      [0, 8],
+      [1, 1],
+      [1, 5],
+      [2, 2],
+      [3, 3],
+      [4, 4],
+      [5, 5],
+      [8, 8],
+    ];
+    for (final pos in positions) {
+      board[pos[0]][pos[1]] = 0;
+    }
+    return board;
   }
 }
 
