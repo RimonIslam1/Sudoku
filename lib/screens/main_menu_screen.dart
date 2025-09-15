@@ -3,6 +3,8 @@ import 'package:sudoku_app/screens/difficulties_screen.dart';
 import 'package:sudoku_app/screens/settings_screen.dart';
 import 'package:sudoku_app/screens/rules_screen.dart';
 import 'package:sudoku_app/screens/techniques_screen.dart';
+import 'package:sudoku_app/screens/leaderboard_screen.dart';
+import 'package:sudoku_app/screens/solved_puzzles_screen.dart';
 
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({super.key});
@@ -82,6 +84,30 @@ class MainMenuScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const TechniquesScreen(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildMenuButton(
+                      context,
+                      'Solved Puzzles',
+                      Icons.checklist,
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SolvedPuzzlesScreen(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildMenuButton(
+                      context,
+                      'Leaderboard',
+                      Icons.leaderboard,
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LeaderboardScreen(),
                         ),
                       ),
                     ),

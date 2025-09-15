@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'dart:async';
+import 'package:sudoku_app/services/storage_service.dart';
+import 'package:sudoku_app/models/solved_puzzle.dart';
+import 'package:sudoku_app/models/leaderboard_entry.dart';
 
 class GameProvider extends ChangeNotifier {
   List<List<int>> _board = List.generate(9, (_) => List.filled(9, 0));
@@ -214,6 +217,36 @@ class GameProvider extends ChangeNotifier {
     // Stop timer when game is complete
     if (_isGameComplete) {
       _stopTimer();
+      _persistCompletion();
+    }
+  }
+
+  Future<void> _persistCompletion() async {
+    try {
+      final storage = StorageService();
+      final String id = DateTime.now().millisecondsSinceEpoch.toString();
+      final solved = SolvedPuzzle(
+        id: id,
+        difficulty: _difficulty,
+        originalBoard: List.generate(9, (i) => List.from(_originalBoard[i])),
+        solutionBoard: List.generate(9, (i) => List.from(_solution[i])),
+        elapsedTime: _elapsedTime,
+        completedAt: DateTime.now(),
+      );
+      await storage.saveSolvedPuzzle(solved);
+
+      final name = await storage.getPlayerName();
+      final leaderboardEntry = LeaderboardEntry(
+        id: id,
+        playerName: name,
+        difficulty: _difficulty,
+        elapsedTime: _elapsedTime,
+        puzzlesSolved: 1,
+        completedAt: DateTime.now(),
+      );
+      await storage.addLeaderboardEntry(leaderboardEntry);
+    } catch (_) {
+      // ignore persistence errors to not affect gameplay
     }
   }
 
@@ -226,6 +259,7 @@ class GameProvider extends ChangeNotifier {
     _moveHistory.clear();
     _isGameComplete = false;
     _initCandidates();
+    _resetTimer();
     notifyListeners();
   }
 
