@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sudoku_app/providers/game_provider.dart';
 import 'package:sudoku_app/screens/game_screen.dart';
+import 'package:sudoku_app/utils/puzzle_generator.dart';
+import 'package:sudoku_app/utils/sudoku_solver.dart';
 
 class PuzzleSelectionScreen extends StatefulWidget {
   final String difficulty;
@@ -143,14 +145,30 @@ class _PuzzleSelectionScreenState extends State<PuzzleSelectionScreen> {
     final List<_PuzzleItem> out = [];
     for (int i = 0; i < 10; i++) {
       final seed = seeds[i % seeds.length];
-      // For Easy difficulty, ensure the first 5 puzzles have exactly 10 empty cells
-      if (difficulty == 'Easy' && i < 5) {
+      // For Easy difficulty, ensure the FIRST puzzle has exactly 10 empty cells
+      // and passes uniqueness validation using the solver
+      if (difficulty == 'Easy' && i == 0) {
         final solved = _stringToBoard(seed.solution);
-        final boardWithTenEmpties = _maskTenCells(solved);
-        out.add(_PuzzleItem(
-          board: boardWithTenEmpties,
-          solution: solved,
-        ));
+        // Validate provided solution grid itself
+        final solutionValid = SudokuSolver.isValidGrid(solved);
+        if (!solutionValid) {
+          // If the provided solution is inconsistent, fallback to original board
+          out.add(_PuzzleItem(
+            board: _stringToBoard(seed.board),
+            solution: solved,
+          ));
+        } else {
+          try {
+            final masked = PuzzleGenerator.generateMaskedUnique(solved, 10);
+            out.add(_PuzzleItem(board: masked, solution: solved));
+          } catch (_) {
+            // If generation fails, fallback to original board to avoid breakage
+            out.add(_PuzzleItem(
+              board: _stringToBoard(seed.board),
+              solution: solved,
+            ));
+          }
+        }
       } else {
         out.add(_PuzzleItem(
           board: _stringToBoard(seed.board),
@@ -172,29 +190,6 @@ class _PuzzleSelectionScreenState extends State<PuzzleSelectionScreen> {
       }
     }
     return b;
-  }
-
-  // Create a very easy puzzle by masking exactly 10 cells from a solved grid
-  // Fixed positions to keep difficulty low and ensure quick solvability
-  List<List<int>> _maskTenCells(List<List<int>> solved) {
-    final List<List<int>> board =
-        List.generate(9, (r) => List<int>.from(solved[r]));
-    const List<List<int>> positions = [
-      [0, 0],
-      [0, 4],
-      [0, 8],
-      [1, 1],
-      [1, 5],
-      [2, 2],
-      [3, 3],
-      [4, 4],
-      [5, 5],
-      [8, 8],
-    ];
-    for (final pos in positions) {
-      board[pos[0]][pos[1]] = 0;
-    }
-    return board;
   }
 }
 

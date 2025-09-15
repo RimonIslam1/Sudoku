@@ -7,6 +7,8 @@ class LeaderboardEntry {
   final Duration elapsedTime;
   final int puzzlesSolved;
   final DateTime completedAt;
+  final String? puzzleId;
+  final int movesCount;
 
   const LeaderboardEntry({
     required this.id,
@@ -15,6 +17,8 @@ class LeaderboardEntry {
     required this.elapsedTime,
     required this.puzzlesSolved,
     required this.completedAt,
+    this.puzzleId,
+    this.movesCount = 0,
   });
 
   Map<String, dynamic> toJson() => {
@@ -24,6 +28,8 @@ class LeaderboardEntry {
         'elapsedMs': elapsedTime.inMilliseconds,
         'puzzlesSolved': puzzlesSolved,
         'completedAt': completedAt.toIso8601String(),
+        'puzzleId': puzzleId,
+        'movesCount': movesCount,
       };
 
   factory LeaderboardEntry.fromJson(Map<String, dynamic> json) =>
@@ -34,6 +40,8 @@ class LeaderboardEntry {
         elapsedTime: Duration(milliseconds: json['elapsedMs'] as int),
         puzzlesSolved: json['puzzlesSolved'] as int,
         completedAt: DateTime.parse(json['completedAt'] as String),
+        puzzleId: json['puzzleId'] as String?,
+        movesCount: (json['movesCount'] ?? 0) as int,
       );
 
   static String encodeList(List<LeaderboardEntry> items) =>

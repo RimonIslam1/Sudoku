@@ -10,6 +10,8 @@ class GameProvider extends ChangeNotifier {
   List<List<int>> _solution = List.generate(9, (_) => List.filled(9, 0));
   List<List<int>> _originalBoard = List.generate(9, (_) => List.filled(9, 0));
   List<Move> _moveHistory = [];
+  int _mistakes = 0;
+  String? _currentPuzzleId;
   String _difficulty = 'Easy';
   bool _isGameComplete = false;
   late List<List<Set<int>>> _candidates;
@@ -28,6 +30,7 @@ class GameProvider extends ChangeNotifier {
   List<List<int>> get solution => _solution;
   List<List<int>> get originalBoard => _originalBoard;
   List<Move> get moveHistory => _moveHistory;
+  int get mistakes => _mistakes;
   String get difficulty => _difficulty;
   bool get isGameComplete => _isGameComplete;
   List<List<Set<int>>> get candidates => _candidates;
@@ -190,6 +193,12 @@ class GameProvider extends ChangeNotifier {
 
     _moveHistory.add(Move(row, col, previousValue, value));
 
+    if (value != 0 &&
+        _solution[row][col] != 0 &&
+        value != _solution[row][col]) {
+      _mistakes++;
+    }
+
     _checkGameComplete();
     notifyListeners();
   }
@@ -224,7 +233,8 @@ class GameProvider extends ChangeNotifier {
   Future<void> _persistCompletion() async {
     try {
       final storage = StorageService();
-      final String id = DateTime.now().millisecondsSinceEpoch.toString();
+      final String id =
+          _currentPuzzleId ?? DateTime.now().millisecondsSinceEpoch.toString();
       final solved = SolvedPuzzle(
         id: id,
         difficulty: _difficulty,
@@ -232,6 +242,8 @@ class GameProvider extends ChangeNotifier {
         solutionBoard: List.generate(9, (i) => List.from(_solution[i])),
         elapsedTime: _elapsedTime,
         completedAt: DateTime.now(),
+        movesCount: _moveHistory.length,
+        mistakesCount: _mistakes,
       );
       await storage.saveSolvedPuzzle(solved);
 
@@ -243,6 +255,8 @@ class GameProvider extends ChangeNotifier {
         elapsedTime: _elapsedTime,
         puzzlesSolved: 1,
         completedAt: DateTime.now(),
+        puzzleId: id,
+        movesCount: _moveHistory.length,
       );
       await storage.addLeaderboardEntry(leaderboardEntry);
     } catch (_) {
@@ -258,6 +272,7 @@ class GameProvider extends ChangeNotifier {
     _board = List.generate(9, (i) => List.from(_originalBoard[i]));
     _moveHistory.clear();
     _isGameComplete = false;
+    _mistakes = 0;
     _initCandidates();
     _resetTimer();
     notifyListeners();
@@ -320,6 +335,8 @@ class GameProvider extends ChangeNotifier {
     _originalBoard = List.generate(9, (i) => List.from(board[i]));
     _moveHistory.clear();
     _isGameComplete = false;
+    _mistakes = 0;
+    _currentPuzzleId = _computePuzzleId(board, solution);
     _initCandidates();
     notifyListeners();
   }
@@ -378,6 +395,16 @@ class GameProvider extends ChangeNotifier {
     } else {
       return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
     }
+  }
+
+  String _computePuzzleId(List<List<int>> board, List<List<int>> solution) {
+    final buffer = StringBuffer();
+    for (int r = 0; r < 9; r++) {
+      for (int c = 0; c < 9; c++) {
+        buffer.write(solution[r][c]);
+      }
+    }
+    return buffer.toString();
   }
 }
 
