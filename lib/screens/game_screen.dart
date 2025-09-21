@@ -99,13 +99,16 @@ class _GameScreenState extends State<GameScreen> {
               Container(
                 height: 70,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: DigitRow(
-                  onDigitSelected: (digit) {
-                    setState(() {
-                      selectedDigit = digit;
-                    });
-                  },
-                  selectedDigit: selectedDigit,
+                child: Consumer<GameProvider>(
+                  builder: (context, gameProvider, child) => DigitRow(
+                    onDigitSelected: (digit) {
+                      setState(() {
+                        selectedDigit = digit;
+                      });
+                    },
+                    selectedDigit: selectedDigit,
+                    digitCounts: gameProvider.digitCounts,
+                  ),
                 ),
               ),
 
