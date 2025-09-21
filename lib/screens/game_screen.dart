@@ -260,6 +260,43 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final gameProvider = Provider.of<GameProvider>(context);
+    if (gameProvider.mistakes >= 3) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showGameOverDialog(context);
+      });
+    }
+  }
+
+  void _showGameOverDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('Game Over'),
+        content: const Text('You made 3 mistakes. The game will restart.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              final gameProvider = Provider.of<GameProvider>(context, listen: false);
+              gameProvider.resetGame();
+              Navigator.of(context).pop();
+              setState(() {
+                selectedRow = null;
+                selectedCol = null;
+                selectedDigit = null;
+              });
+            },
+            child: const Text('Restart'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showResetDialog(BuildContext context) {
     showDialog(
       context: context,

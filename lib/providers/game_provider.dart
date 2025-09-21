@@ -197,6 +197,10 @@ class GameProvider extends ChangeNotifier {
         _solution[row][col] != 0 &&
         value != _solution[row][col]) {
       _mistakes++;
+      if (_mistakes >= 3) {
+        notifyListeners(); // Notify UI to handle game over
+        return;
+      }
     }
 
     _checkGameComplete();
@@ -405,6 +409,40 @@ class GameProvider extends ChangeNotifier {
       }
     }
     return buffer.toString();
+  }
+
+  bool isCellValid(int row, int col) {
+    // Implement your Sudoku validation logic here.
+    // Return true if the cell at (row, col) is valid, false otherwise.
+    // Example:
+    return board[row][col] == 0 || isValidMove(row, col, board[row][col]);
+  }
+
+  bool isValidMove(int row, int col, int num) {
+    if (num == 0) return true; // Empty cell is always valid
+
+    // Check row
+    for (int x = 0; x < 9; x++) {
+      if (x != col && _board[row][x] == num) return false;
+    }
+
+    // Check column
+    for (int x = 0; x < 9; x++) {
+      if (x != row && _board[x][col] == num) return false;
+    }
+
+    // Check 3x3 box
+    int startRow = row - row % 3;
+    int startCol = col - col % 3;
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        int r = startRow + i;
+        int c = startCol + j;
+        if ((r != row || c != col) && _board[r][c] == num) return false;
+      }
+    }
+
+    return true;
   }
 }
 

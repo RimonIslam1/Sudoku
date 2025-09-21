@@ -81,13 +81,23 @@ class SudokuGrid extends StatelessWidget {
       backgroundColor = Theme.of(context).colorScheme.primary.withOpacity(0.1);
     }
 
+    final bool valid = gameProvider.isCellValid(row, col);
+    Color cellColor;
+    if (!valid && gameProvider.board[row][col] != 0) {
+      cellColor = Colors.red.withOpacity(0.5); // Invalid move
+    } else if (valid && gameProvider.board[row][col] != 0) {
+      cellColor = Colors.green.withOpacity(0.3); // Valid move
+    } else {
+      cellColor = Colors.white; // Default
+    }
+
     return Container(
       margin: EdgeInsets.only(
         right: (col + 1) % 3 == 0 ? 2 : 0,
         bottom: (row + 1) % 3 == 0 ? 2 : 0,
       ),
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: cellColor,
         border: Border(
           right: BorderSide(
             color: (col + 1) % 3 == 0
