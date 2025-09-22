@@ -86,7 +86,7 @@ class SudokuGrid extends StatelessWidget {
     if (!valid && gameProvider.board[row][col] != 0) {
       cellColor = Colors.red.withOpacity(0.5); // Invalid move
     } else if (valid && gameProvider.board[row][col] != 0) {
-      cellColor = Colors.green.withOpacity(0.3); // Valid move
+      cellColor = Colors.white.withOpacity(0.3); // Valid move
     } else {
       cellColor = Colors.white; // Default
     }
