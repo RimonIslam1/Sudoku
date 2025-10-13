@@ -29,8 +29,8 @@ class DigitRow extends StatelessWidget {
                 onTap: () => onDigitSelected(digit),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 150),
-                  width: 44,
-                  height: 44,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
                     color: isSelected
                         ? Theme.of(context).colorScheme.primary
@@ -55,7 +55,7 @@ class DigitRow extends StatelessWidget {
                   child: Text(
                     '$digit',
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: isSelected
                           ? Colors.white

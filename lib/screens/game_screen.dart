@@ -283,6 +283,7 @@ class _GameScreenState extends State<GameScreen> {
                 selectedDigit = null;
               });
 // =======
+//=======
               gameProvider.resetGame(); // Reset the game first
               Navigator.of(context).pop(); // Then close the dialog
               // No need for setState or extra logic here
