@@ -96,7 +96,13 @@ class _SudokuGridState extends State<SudokuGrid> {
     if (!valid && gameProvider.board[row][col] != 0) {
       cellColor = Colors.red.withOpacity(0.5); // Invalid move
     } else if (valid && gameProvider.board[row][col] != 0) {
+<<<<<<< HEAD
       cellColor = Colors.green.withOpacity(0.3); // Valid move
+=======
+      cellColor = Colors.white.withOpacity(0.3); // Valid move
+    } else {
+      cellColor = Colors.white; // Default
+>>>>>>> 7f96ff3f9bdf48484c03608b3dc2a5fc7c770edf
     }
 
     return AnimatedContainer(
