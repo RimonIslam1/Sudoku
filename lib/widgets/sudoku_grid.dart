@@ -78,16 +78,18 @@ class _SudokuGridState extends State<SudokuGrid> {
     final isSelected = gameProvider.isCellSelected(row, col);
     final isInSelectedRow = gameProvider.isInSelectedRow(row);
     final isInSelectedCol = gameProvider.isInSelectedColumn(col);
-    // Unused with simplified highlighting
-    // final isInSelectedBox = gameProvider.isInSelectedBox(row, col);
-    // final hasSameDigit = gameProvider.hasSameDigit(row, col);
+    final isInSelectedBox = gameProvider.isInSelectedBox(row, col);
+    final hasSameDigit = gameProvider.hasSameDigit(row, col);
     final cellCandidates = gameProvider.getCandidates(row, col);
 
-    // Determine background color based on highlighting (white by default)
+    // Determine background color priority:
+    // selected > same-digit > row/col/box > default
     Color backgroundColor = Colors.white;
     if (isSelected) {
       backgroundColor = HighlightingConstants.selectedCellColor;
-    } else if (isInSelectedRow || isInSelectedCol) {
+    } else if (hasSameDigit) {
+      backgroundColor = HighlightingConstants.sameDigitHighlightColor;
+    } else if (isInSelectedRow || isInSelectedCol || isInSelectedBox) {
       backgroundColor = HighlightingConstants.rowColumnHighlightColor;
     }
 
@@ -95,14 +97,6 @@ class _SudokuGridState extends State<SudokuGrid> {
     Color cellColor = backgroundColor;
     if (!valid && gameProvider.board[row][col] != 0) {
       cellColor = Colors.red.withOpacity(0.5); // Invalid move
-    } else if (valid && gameProvider.board[row][col] != 0) {
-<<<<<<< HEAD
-      cellColor = Colors.green.withOpacity(0.3); // Valid move
-=======
-      cellColor = Colors.white.withOpacity(0.3); // Valid move
-    } else {
-      cellColor = Colors.white; // Default
->>>>>>> 7f96ff3f9bdf48484c03608b3dc2a5fc7c770edf
     }
 
     return AnimatedContainer(

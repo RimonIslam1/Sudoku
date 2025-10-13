@@ -276,17 +276,17 @@ class _GameScreenState extends State<GameScreen> {
           TextButton(
             onPressed: () {
               final gameProvider = Provider.of<GameProvider>(context, listen: false);
-<<<<<<< HEAD
+//<<<<<<< HEAD
               gameProvider.resetGame();
               Navigator.of(context).pop();
               setState(() {
                 selectedDigit = null;
               });
-=======
+// =======
               gameProvider.resetGame(); // Reset the game first
               Navigator.of(context).pop(); // Then close the dialog
               // No need for setState or extra logic here
->>>>>>> 7f96ff3f9bdf48484c03608b3dc2a5fc7c770edf
+//>>>>>>> 7f96ff3f9bdf48484c03608b3dc2a5fc7c770edf
             },
             child: const Text('Restart'),
           ),

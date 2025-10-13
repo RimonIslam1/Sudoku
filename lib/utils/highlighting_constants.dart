@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 
 class HighlightingConstants {
   // Highlighting colors
-  static const Color selectedCellColor =
-      Color(0xFFFFEE58); // Slightly darker yellow
-  static const Color selectedCellBorderColor = Color(0xFFFFEE58);
-  static const Color rowColumnHighlightColor = Color(0xFFFFF59D); // Soft yellow
-  static const Color sameDigitHighlightColor = Color(0xFFFFF59D);
-  static const Color boxHighlightColor = Color(0xFFFFF59D);
+  static const Color selectedCellColor = Color(0xFF64B5F6); // Darker blue
+  static const Color selectedCellBorderColor = Color(0xFF42A5F5);
+  static const Color rowColumnHighlightColor = Color(0xFFBBDEFB); // Soft blue
+  static const Color sameDigitHighlightColor = Color(0xFFFFF59D); // Soft yellow
+  static const Color boxHighlightColor = Color(0xFFBBDEFB);
 
   // Animation durations
   static const Duration highlightAnimationDuration =
-      Duration(milliseconds: 180);
-  static const Duration fadeInDuration = Duration(milliseconds: 180);
-  static const Duration fadeOutDuration = Duration(milliseconds: 180);
+      Duration(milliseconds: 150);
+  static const Duration fadeInDuration = Duration(milliseconds: 150);
+  static const Duration fadeOutDuration = Duration(milliseconds: 150);
 
   // Opacity values
   static const double selectedCellOpacity = 1.0;
