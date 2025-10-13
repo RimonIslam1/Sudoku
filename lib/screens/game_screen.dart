@@ -13,8 +13,6 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  int? selectedRow;
-  int? selectedCol;
   int? selectedDigit;
   bool notesMode = false;
 
@@ -66,14 +64,7 @@ class _GameScreenState extends State<GameScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: SudokuGrid(
-                    selectedRow: selectedRow,
-                    selectedCol: selectedCol,
                     onCellSelected: (row, col) {
-                      setState(() {
-                        selectedRow = row;
-                        selectedCol = col;
-                      });
-
                       // Fill cell with selected digit if available
                       if (selectedDigit != null) {
                         final gameProvider =
@@ -129,8 +120,8 @@ class _GameScreenState extends State<GameScreen> {
                   onHint: () {
                     final gameProvider =
                         Provider.of<GameProvider>(context, listen: false);
-                    if (selectedRow != null && selectedCol != null) {
-                      gameProvider.provideHintAt(selectedRow!, selectedCol!);
+                    if (gameProvider.selectedRow != null && gameProvider.selectedCol != null) {
+                      gameProvider.provideHintAt(gameProvider.selectedRow!, gameProvider.selectedCol!);
                     } else {
                       gameProvider.provideRandomHint();
                     }
@@ -145,14 +136,14 @@ class _GameScreenState extends State<GameScreen> {
                     });
                   },
                   onClear: () {
-                    if (selectedRow != null && selectedCol != null) {
-                      final gameProvider =
-                          Provider.of<GameProvider>(context, listen: false);
+                    final gameProvider =
+                        Provider.of<GameProvider>(context, listen: false);
+                    if (gameProvider.selectedRow != null && gameProvider.selectedCol != null) {
                       if (notesMode) {
                         gameProvider.clearCandidates(
-                            selectedRow!, selectedCol!);
+                            gameProvider.selectedRow!, gameProvider.selectedCol!);
                       } else {
-                        gameProvider.makeMove(selectedRow!, selectedCol!, 0);
+                        gameProvider.makeMove(gameProvider.selectedRow!, gameProvider.selectedCol!, 0);
                       }
                     }
                     setState(() {
@@ -288,8 +279,6 @@ class _GameScreenState extends State<GameScreen> {
               gameProvider.resetGame();
               Navigator.of(context).pop();
               setState(() {
-                selectedRow = null;
-                selectedCol = null;
                 selectedDigit = null;
               });
             },
@@ -319,8 +308,6 @@ class _GameScreenState extends State<GameScreen> {
                     Provider.of<GameProvider>(context, listen: false);
                 gameProvider.resetGame();
                 setState(() {
-                  selectedRow = null;
-                  selectedCol = null;
                   selectedDigit = null;
                 });
                 Navigator.of(context).pop();

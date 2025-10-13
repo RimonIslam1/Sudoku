@@ -16,6 +16,10 @@ class GameProvider extends ChangeNotifier {
   bool _isGameComplete = false;
   late List<List<Set<int>>> _candidates;
 
+  // Highlighting state
+  int? _selectedRow;
+  int? _selectedCol;
+
   // Timer functionality
   Timer? _timer;
   Duration _elapsedTime = Duration.zero;
@@ -37,6 +41,8 @@ class GameProvider extends ChangeNotifier {
   Duration get elapsedTime => _elapsedTime;
   bool get isTimerRunning => _isTimerRunning;
   bool get hasGameStarted => _hasGameStarted;
+  int? get selectedRow => _selectedRow;
+  int? get selectedCol => _selectedCol;
 
   // Get digit counts (excluding candidates)
   Map<int, int> get digitCounts {
@@ -69,6 +75,7 @@ class GameProvider extends ChangeNotifier {
     _isGameComplete = false;
     _initCandidates();
     _resetTimer();
+    _clearSelection();
     notifyListeners();
   }
 
@@ -279,6 +286,7 @@ class GameProvider extends ChangeNotifier {
     _mistakes = 0;
     _initCandidates();
     _resetTimer();
+    _clearSelection();
     notifyListeners();
   }
 
@@ -443,6 +451,59 @@ class GameProvider extends ChangeNotifier {
     }
 
     return true;
+  }
+
+  // Highlighting methods
+  void selectCell(int row, int col) {
+    _selectedRow = row;
+    _selectedCol = col;
+    notifyListeners();
+  }
+
+  void clearSelection() {
+    _selectedRow = null;
+    _selectedCol = null;
+    notifyListeners();
+  }
+
+  void _clearSelection() {
+    _selectedRow = null;
+    _selectedCol = null;
+  }
+
+  bool isCellSelected(int row, int col) {
+    return _selectedRow == row && _selectedCol == col;
+  }
+
+  bool isInSelectedRow(int row) {
+    return _selectedRow != null && _selectedRow == row;
+  }
+
+  bool isInSelectedColumn(int col) {
+    return _selectedCol != null && _selectedCol == col;
+  }
+
+  bool isInSelectedBox(int row, int col) {
+    if (_selectedRow == null || _selectedCol == null) return false;
+
+    int boxRow1 = row ~/ 3;
+    int boxCol1 = col ~/ 3;
+    int boxRow2 = _selectedRow! ~/ 3;
+    int boxCol2 = _selectedCol! ~/ 3;
+
+    return boxRow1 == boxRow2 && boxCol1 == boxCol2;
+  }
+
+  bool hasSameDigit(int row, int col) {
+    if (_selectedRow == null || _selectedCol == null) return false;
+    if (_board[_selectedRow!][_selectedCol!] == 0) return false;
+
+    return _board[row][col] == _board[_selectedRow!][_selectedCol!];
+  }
+
+  int? getSelectedDigit() {
+    if (_selectedRow == null || _selectedCol == null) return null;
+    return _board[_selectedRow!][_selectedCol!];
   }
 }
 

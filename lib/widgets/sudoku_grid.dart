@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sudoku_app/providers/game_provider.dart';
+import 'package:sudoku_app/utils/highlighting_constants.dart';
 
-class SudokuGrid extends StatelessWidget {
-  final int? selectedRow;
-  final int? selectedCol;
+class SudokuGrid extends StatefulWidget {
   final Function(int, int) onCellSelected;
 
   const SudokuGrid({
     super.key,
-    this.selectedRow,
-    this.selectedCol,
     required this.onCellSelected,
   });
+
+  @override
+  State<SudokuGrid> createState() => _SudokuGridState();
+}
+
+class _SudokuGridState extends State<SudokuGrid> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,30 +75,33 @@ class SudokuGrid extends StatelessWidget {
       BuildContext context, int row, int col, GameProvider gameProvider) {
     final value = gameProvider.board[row][col];
     final isOriginal = gameProvider.isOriginalCell(row, col);
-    final isSelected = selectedRow == row && selectedCol == col;
-    final isInSameRow = selectedRow == row;
-    final isInSameCol = selectedCol == col;
-    final isInSameBox = _isInSameBox(row, col, selectedRow, selectedCol);
+    final isSelected = gameProvider.isCellSelected(row, col);
+    final isInSelectedRow = gameProvider.isInSelectedRow(row);
+    final isInSelectedCol = gameProvider.isInSelectedColumn(col);
+    // Unused with simplified highlighting
+    // final isInSelectedBox = gameProvider.isInSelectedBox(row, col);
+    // final hasSameDigit = gameProvider.hasSameDigit(row, col);
     final cellCandidates = gameProvider.getCandidates(row, col);
 
+    // Determine background color based on highlighting (white by default)
     Color backgroundColor = Colors.white;
     if (isSelected) {
-      backgroundColor = Theme.of(context).colorScheme.primary.withOpacity(0.3);
-    } else if (isInSameRow || isInSameCol || isInSameBox) {
-      backgroundColor = Theme.of(context).colorScheme.primary.withOpacity(0.1);
+      backgroundColor = HighlightingConstants.selectedCellColor;
+    } else if (isInSelectedRow || isInSelectedCol) {
+      backgroundColor = HighlightingConstants.rowColumnHighlightColor;
     }
 
     final bool valid = gameProvider.isCellValid(row, col);
-    Color cellColor;
+    Color cellColor = backgroundColor;
     if (!valid && gameProvider.board[row][col] != 0) {
       cellColor = Colors.red.withOpacity(0.5); // Invalid move
     } else if (valid && gameProvider.board[row][col] != 0) {
       cellColor = Colors.green.withOpacity(0.3); // Valid move
-    } else {
-      cellColor = Colors.white; // Default
     }
 
-    return Container(
+    return AnimatedContainer(
+      duration: HighlightingConstants.highlightAnimationDuration,
+      curve: Curves.easeInOut,
       margin: EdgeInsets.only(
         right: (col + 1) % 3 == 0 ? 2 : 0,
         bottom: (row + 1) % 3 == 0 ? 2 : 0,
@@ -103,20 +113,41 @@ class SudokuGrid extends StatelessWidget {
             color: (col + 1) % 3 == 0
                 ? Colors.black
                 : Colors.grey.withOpacity(0.3),
-            width: (col + 1) % 3 == 0 ? 2 : 1,
+            width: (col + 1) % 3 == 0
+                ? HighlightingConstants.thickBorderWidth
+                : HighlightingConstants.normalBorderWidth,
           ),
           bottom: BorderSide(
             color: (row + 1) % 3 == 0
                 ? Colors.black
                 : Colors.grey.withOpacity(0.3),
-            width: (row + 1) % 3 == 0 ? 2 : 1,
+            width: (row + 1) % 3 == 0
+                ? HighlightingConstants.thickBorderWidth
+                : HighlightingConstants.normalBorderWidth,
+          ),
+          left: BorderSide(
+            color: isSelected
+                ? HighlightingConstants.selectedCellBorderColor
+                : Colors.transparent,
+            width:
+                isSelected ? HighlightingConstants.selectedCellBorderWidth : 0,
+          ),
+          top: BorderSide(
+            color: isSelected
+                ? HighlightingConstants.selectedCellBorderColor
+                : Colors.transparent,
+            width:
+                isSelected ? HighlightingConstants.selectedCellBorderWidth : 0,
           ),
         ),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => onCellSelected(row, col),
+          onTap: () {
+            gameProvider.selectCell(row, col);
+            widget.onCellSelected(row, col);
+          },
           child: Center(
             child: value == 0
                 ? _buildCandidatesView(context, cellCandidates)
@@ -135,17 +166,6 @@ class SudokuGrid extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  bool _isInSameBox(int row1, int col1, int? row2, int? col2) {
-    if (row2 == null || col2 == null) return false;
-
-    int boxRow1 = row1 ~/ 3;
-    int boxCol1 = col1 ~/ 3;
-    int boxRow2 = row2 ~/ 3;
-    int boxCol2 = col2 ~/ 3;
-
-    return boxRow1 == boxRow2 && boxCol1 == boxCol2;
   }
 
   Widget _buildCandidatesView(BuildContext context, Set<int> candidates) {
