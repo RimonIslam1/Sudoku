@@ -88,8 +88,8 @@ class _GameScreenState extends State<GameScreen> {
 
               // Digit Buttons Row
               Container(
-                height: 70,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                height: 60,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Consumer<GameProvider>(
                   builder: (context, gameProvider, child) => DigitRow(
                     onDigitSelected: (digit) {
@@ -107,7 +107,7 @@ class _GameScreenState extends State<GameScreen> {
 
               // Action Buttons
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: ActionButtons(
                   onUndo: () {
                     final gameProvider =
