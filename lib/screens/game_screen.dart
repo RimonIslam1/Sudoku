@@ -106,7 +106,7 @@ class _GameScreenState extends State<GameScreen> {
 
               // Action Buttons
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: ActionButtons(
                   onUndo: () {
                     final gameProvider =
