@@ -24,46 +24,41 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 8),
                 Text(
                   'App Settings',
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: 26,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
-                const SizedBox(height: 30),
-                Expanded(
-                  child: Column(
-                    children: [
-                      _buildSettingCard(
-                        context,
-                        'Appearance',
-                        Icons.palette,
-                        [
-                          _buildDarkModeToggle(context),
-                          const SizedBox(height: 20),
-                          _buildColorThemeSelector(context),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      _buildSettingCard(
-                        context,
-                        'About',
-                        Icons.info,
-                        [
-                          _buildAboutSection(context),
-                        ],
-                      ),
-                    ],
-                  ),
+                const SizedBox(height: 16),
+                _buildSettingCard(
+                  context,
+                  'Appearance',
+                  Icons.palette,
+                  [
+                    _buildDarkModeToggle(context),
+                    const SizedBox(height: 16),
+                    _buildColorThemeSelector(context),
+                  ],
                 ),
+                const SizedBox(height: 16),
+                _buildSettingCard(
+                  context,
+                  'About',
+                  Icons.info,
+                  [
+                    _buildAboutSection(context),
+                  ],
+                ),
+                const SizedBox(height: 8),
               ],
             ),
           ),
@@ -144,7 +139,10 @@ class SettingsScreen extends StatelessWidget {
                   'Switch between light and dark themes',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.6),
                   ),
                 ),
               ],

@@ -95,8 +95,9 @@ class _SudokuGridState extends State<SudokuGrid> {
 
     final bool valid = gameProvider.isCellValid(row, col);
     Color cellColor = backgroundColor;
-    if (!valid && gameProvider.board[row][col] != 0) {
-      cellColor = Colors.red.withOpacity(0.5); // Invalid move
+    // Only mark a cell red if it's a user-entered value and it's invalid.
+    if (!valid && gameProvider.board[row][col] != 0 && !isOriginal) {
+      cellColor = Colors.red.withOpacity(0.5);
     }
 
     return AnimatedContainer(

@@ -86,9 +86,8 @@ class _GameScreenState extends State<GameScreen> {
 
               const SizedBox(height: 16),
 
-              // Digit Buttons Row
-              Container(
-                height: 70,
+              // Digit Buttons Row (responsive)
+              Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Consumer<GameProvider>(
                   builder: (context, gameProvider, child) => DigitRow(
@@ -120,8 +119,10 @@ class _GameScreenState extends State<GameScreen> {
                   onHint: () {
                     final gameProvider =
                         Provider.of<GameProvider>(context, listen: false);
-                    if (gameProvider.selectedRow != null && gameProvider.selectedCol != null) {
-                      gameProvider.provideHintAt(gameProvider.selectedRow!, gameProvider.selectedCol!);
+                    if (gameProvider.selectedRow != null &&
+                        gameProvider.selectedCol != null) {
+                      gameProvider.provideHintAt(
+                          gameProvider.selectedRow!, gameProvider.selectedCol!);
                     } else {
                       gameProvider.provideRandomHint();
                     }
@@ -138,12 +139,14 @@ class _GameScreenState extends State<GameScreen> {
                   onClear: () {
                     final gameProvider =
                         Provider.of<GameProvider>(context, listen: false);
-                    if (gameProvider.selectedRow != null && gameProvider.selectedCol != null) {
+                    if (gameProvider.selectedRow != null &&
+                        gameProvider.selectedCol != null) {
                       if (notesMode) {
-                        gameProvider.clearCandidates(
-                            gameProvider.selectedRow!, gameProvider.selectedCol!);
+                        gameProvider.clearCandidates(gameProvider.selectedRow!,
+                            gameProvider.selectedCol!);
                       } else {
-                        gameProvider.makeMove(gameProvider.selectedRow!, gameProvider.selectedCol!, 0);
+                        gameProvider.makeMove(gameProvider.selectedRow!,
+                            gameProvider.selectedCol!, 0);
                       }
                     }
                     setState(() {
@@ -275,7 +278,8 @@ class _GameScreenState extends State<GameScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              final gameProvider = Provider.of<GameProvider>(context, listen: false);
+              final gameProvider =
+                  Provider.of<GameProvider>(context, listen: false);
 //<<<<<<< HEAD
               gameProvider.resetGame();
               Navigator.of(context).pop();

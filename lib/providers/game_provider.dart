@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:sudoku_app/services/storage_service.dart';
 import 'package:sudoku_app/models/solved_puzzle.dart';
 import 'package:sudoku_app/models/leaderboard_entry.dart';
+import 'package:sudoku_app/utils/puzzle_database.dart';
 
 class GameProvider extends ChangeNotifier {
   List<List<int>> _board = List.generate(9, (_) => List.filled(9, 0));
@@ -69,8 +70,7 @@ class GameProvider extends ChangeNotifier {
   }
 
   void _generateNewGame() {
-    _generateSolution();
-    _createPuzzle();
+    _loadRandomPuzzle();
     _moveHistory.clear();
     _isGameComplete = false;
     _initCandidates();
@@ -79,109 +79,52 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _generateSolution() {
-    // Generate a valid Sudoku solution
-    _solution = List.generate(9, (_) => List.filled(9, 0));
-    _fillDiagonal();
-    _solveSudoku(_solution);
-  }
+  void _loadRandomPuzzle() {
+    try {
+      final puzzleData = PuzzleDatabase.getRandomPuzzle(_difficulty);
+      _board = List.generate(9, (i) => List.from(puzzleData.puzzle[i]));
+      _solution = List.generate(9, (i) => List.from(puzzleData.solution[i]));
+      _originalBoard = List.generate(9, (i) => List.from(puzzleData.puzzle[i]));
 
-  void _fillDiagonal() {
-    // Fill the three 3x3 boxes on the diagonal
-    _fillBox(0, 0);
-    _fillBox(3, 3);
-    _fillBox(6, 6);
-  }
-
-  void _fillBox(int row, int col) {
-    List<int> numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    numbers.shuffle();
-    for (int i = 0; i < 3; i++) {
-      for (int j = 0; j < 3; j++) {
-        _solution[row + i][col + j] = numbers.removeLast();
+      // Debug: Print the board to console
+      print('Loaded Sudoku Board for $_difficulty:');
+      for (int i = 0; i < 9; i++) {
+        print(_board[i].join(' '));
       }
+    } catch (e) {
+      print('Error loading puzzle: $e');
+      // Fallback to a simple valid puzzle
+      _loadFallbackPuzzle();
     }
   }
 
-  bool _solveSudoku(List<List<int>> grid) {
-    for (int row = 0; row < 9; row++) {
-      for (int col = 0; col < 9; col++) {
-        if (grid[row][col] == 0) {
-          for (int num = 1; num <= 9; num++) {
-            if (_isValid(grid, row, col, num)) {
-              grid[row][col] = num;
-              if (_solveSudoku(grid)) {
-                return true;
-              }
-              grid[row][col] = 0;
-            }
-          }
-          return false;
-        }
-      }
-    }
-    return true;
-  }
+  void _loadFallbackPuzzle() {
+    // Simple fallback puzzle
+    _solution = [
+      [5, 3, 4, 6, 7, 8, 9, 1, 2],
+      [6, 7, 2, 1, 9, 5, 3, 4, 8],
+      [1, 9, 8, 3, 4, 2, 5, 6, 7],
+      [8, 5, 9, 7, 6, 1, 4, 2, 3],
+      [4, 2, 6, 8, 5, 3, 7, 9, 1],
+      [7, 1, 3, 9, 2, 4, 8, 5, 6],
+      [9, 6, 1, 5, 3, 7, 2, 8, 4],
+      [2, 8, 7, 4, 1, 9, 6, 3, 5],
+      [3, 4, 5, 2, 8, 6, 1, 7, 9],
+    ];
 
-  bool _isValid(List<List<int>> grid, int row, int col, int num) {
-    // Check row
-    for (int x = 0; x < 9; x++) {
-      if (grid[row][x] == num) return false;
-    }
+    _board = [
+      [5, 3, 0, 0, 7, 0, 0, 0, 0],
+      [6, 0, 0, 1, 9, 5, 0, 0, 0],
+      [0, 9, 8, 0, 0, 0, 0, 6, 0],
+      [8, 0, 0, 0, 6, 0, 0, 0, 3],
+      [4, 0, 0, 8, 0, 3, 0, 0, 1],
+      [7, 0, 0, 0, 2, 0, 0, 0, 6],
+      [0, 6, 0, 0, 0, 0, 2, 8, 0],
+      [0, 0, 0, 4, 1, 9, 0, 0, 5],
+      [0, 0, 0, 0, 8, 0, 0, 7, 9],
+    ];
 
-    // Check column
-    for (int x = 0; x < 9; x++) {
-      if (grid[x][col] == num) return false;
-    }
-
-    // Check 3x3 box
-    int startRow = row - row % 3;
-    int startCol = col - col % 3;
-    for (int i = 0; i < 3; i++) {
-      for (int j = 0; j < 3; j++) {
-        if (grid[i + startRow][j + startCol] == num) return false;
-      }
-    }
-
-    return true;
-  }
-
-  void _createPuzzle() {
-    _board = List.generate(9, (i) => List.from(_solution[i]));
-    _originalBoard = List.generate(9, (i) => List.from(_solution[i]));
-
-    int cellsToRemove;
-    switch (_difficulty) {
-      case 'Easy':
-        cellsToRemove = 30;
-        break;
-      case 'Medium':
-        cellsToRemove = 45;
-        break;
-      case 'Hard':
-        cellsToRemove = 55;
-        break;
-      default:
-        cellsToRemove = 30;
-    }
-
-    Random random = Random();
-    int removed = 0;
-    while (removed < cellsToRemove) {
-      int row = random.nextInt(9);
-      int col = random.nextInt(9);
-      if (_board[row][col] != 0) {
-        _board[row][col] = 0;
-        _originalBoard[row][col] = 0;
-        removed++;
-      }
-    }
-
-    // Debug: Print the board to console
-    print('Generated Sudoku Board:');
-    for (int i = 0; i < 9; i++) {
-      print(_board[i].join(' '));
-    }
+    _originalBoard = List.generate(9, (i) => List.from(_board[i]));
   }
 
   void makeMove(int row, int col, int value) {
