@@ -74,3 +74,4 @@ lib/
    - Use the "Clear" button to remove a number
    - Use "Undo" to step back through your moves
 4. **Complete the Puzzle**: Fill all cells correctly to win!
+# Sudoku
