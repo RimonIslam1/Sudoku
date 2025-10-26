@@ -45,12 +45,12 @@ class DigitRow extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: isSelected
                               ? Theme.of(context).colorScheme.primary
-                              : Colors.white,
+                              : Theme.of(context).colorScheme.surface,
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: isSelected
                                 ? Theme.of(context).colorScheme.primary
-                                : Colors.grey.shade300,
+                                : Theme.of(context).colorScheme.outline,
                             width: 2,
                           ),
                           boxShadow: [
@@ -72,7 +72,7 @@ class DigitRow extends StatelessWidget {
                             fontSize: isCompact ? 18 : 20,
                             fontWeight: FontWeight.bold,
                             color: isSelected
-                                ? Colors.white
+                                ? Theme.of(context).colorScheme.onPrimary
                                 : Theme.of(context).colorScheme.primary,
                           ),
                         ),
@@ -83,7 +83,10 @@ class DigitRow extends StatelessWidget {
                       '$count',
                       style: TextStyle(
                         fontSize: labelFontSize,
-                        color: Colors.grey[700],
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.7),
                       ),
                     ),
                   ],

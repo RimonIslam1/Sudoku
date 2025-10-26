@@ -36,8 +36,7 @@ class RulesScreen extends StatelessWidget {
           _section(
             context,
             title: 'Gameplay Tips',
-            body:
-                '• Start with easy cells that have many neighbors filled.\n'
+            body: '• Start with easy cells that have many neighbors filled.\n'
                 '• Use candidate notes to record possible digits.\n'
                 '• Use Undo and Hint when stuck.',
           ),
@@ -46,14 +45,15 @@ class RulesScreen extends StatelessWidget {
     );
   }
 
-  Widget _section(BuildContext context, {required String title, required String body}) {
+  Widget _section(BuildContext context,
+      {required String title, required String body}) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -77,7 +77,8 @@ class RulesScreen extends StatelessWidget {
               body,
               style: TextStyle(
                 fontSize: 15,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.85),
+                color:
+                    Theme.of(context).colorScheme.onSurface.withOpacity(0.85),
                 height: 1.4,
               ),
             ),
@@ -90,11 +91,11 @@ class RulesScreen extends StatelessWidget {
   Widget _diagramCard(BuildContext context, String title, String subtitle) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -111,7 +112,8 @@ class RulesScreen extends StatelessWidget {
                 color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(Icons.grid_on, color: Theme.of(context).colorScheme.primary),
+              child: Icon(Icons.grid_on,
+                  color: Theme.of(context).colorScheme.primary),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -120,14 +122,21 @@ class RulesScreen extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     subtitle,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.7),
                     ),
                   ),
                 ],
@@ -139,5 +148,3 @@ class RulesScreen extends StatelessWidget {
     );
   }
 }
-
-

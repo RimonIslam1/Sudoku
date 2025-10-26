@@ -37,11 +37,11 @@ class _SudokuGridState extends State<SudokuGrid> {
 
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(15),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 5),
               ),
@@ -84,7 +84,7 @@ class _SudokuGridState extends State<SudokuGrid> {
 
     // Determine background color priority:
     // selected > same-digit > row/col/box > default
-    Color backgroundColor = Colors.white;
+    Color backgroundColor = Theme.of(context).colorScheme.surface;
     if (isSelected) {
       backgroundColor = HighlightingConstants.selectedCellColor;
     } else if (hasSameDigit) {
@@ -112,16 +112,16 @@ class _SudokuGridState extends State<SudokuGrid> {
         border: Border(
           right: BorderSide(
             color: (col + 1) % 3 == 0
-                ? Colors.black
-                : Colors.grey.withOpacity(0.3),
+                ? Theme.of(context).colorScheme.onSurface
+                : Theme.of(context).colorScheme.outline.withOpacity(0.3),
             width: (col + 1) % 3 == 0
                 ? HighlightingConstants.thickBorderWidth
                 : HighlightingConstants.normalBorderWidth,
           ),
           bottom: BorderSide(
             color: (row + 1) % 3 == 0
-                ? Colors.black
-                : Colors.grey.withOpacity(0.3),
+                ? Theme.of(context).colorScheme.onSurface
+                : Theme.of(context).colorScheme.outline.withOpacity(0.3),
             width: (row + 1) % 3 == 0
                 ? HighlightingConstants.thickBorderWidth
                 : HighlightingConstants.normalBorderWidth,
@@ -158,15 +158,43 @@ class _SudokuGridState extends State<SudokuGrid> {
                       fontSize: 20,
                       fontWeight:
                           isOriginal ? FontWeight.bold : FontWeight.normal,
-                      color: isOriginal
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.onSurface,
+                      color: _getTextColor(
+                          context,
+                          isOriginal,
+                          isSelected,
+                          hasSameDigit,
+                          isInSelectedRow,
+                          isInSelectedCol,
+                          isInSelectedBox),
                     ),
                   ),
           ),
         ),
       ),
     );
+  }
+
+  Color _getTextColor(
+      BuildContext context,
+      bool isOriginal,
+      bool isSelected,
+      bool hasSameDigit,
+      bool isInSelectedRow,
+      bool isInSelectedCol,
+      bool isInSelectedBox) {
+    // If cell is highlighted (selected, same digit, or in same row/col/box), use dark text for visibility
+    if (isSelected ||
+        hasSameDigit ||
+        isInSelectedRow ||
+        isInSelectedCol ||
+        isInSelectedBox) {
+      return isOriginal ? Colors.black : Colors.black87;
+    }
+
+    // For non-highlighted cells, use theme colors
+    return isOriginal
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.onSurface;
   }
 
   Widget _buildCandidatesView(BuildContext context, Set<int> candidates) {
@@ -188,7 +216,10 @@ class _SudokuGridState extends State<SudokuGrid> {
                             '$digit',
                             style: TextStyle(
                               fontSize: 10,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.black87
+                                  : Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.w600,
                             ),
                           )

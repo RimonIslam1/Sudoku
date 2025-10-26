@@ -13,26 +13,39 @@ class _TechniquesScreenState extends State<TechniquesScreen> {
   String _selectedCategory = 'All';
   String _selectedDifficulty = 'All';
 
-  final List<String> _categories = ['All', 'Basic', 'Intermediate', 'Advanced', 'Expert'];
-  final List<String> _difficulties = ['All', 'Easy', 'Medium', 'Hard', 'Expert'];
+  final List<String> _categories = [
+    'All',
+    'Basic',
+    'Intermediate',
+    'Advanced',
+    'Expert'
+  ];
+  final List<String> _difficulties = [
+    'All',
+    'Easy',
+    'Medium',
+    'Hard',
+    'Expert'
+  ];
 
   List<SolvingTechnique> get _filteredTechniques {
     var techniques = TechniqueData.techniques;
-    
+
     if (_selectedCategory != 'All') {
-      techniques = techniques.where((t) => t.category == _selectedCategory).toList();
+      techniques =
+          techniques.where((t) => t.category == _selectedCategory).toList();
     }
-    
+
     if (_selectedDifficulty != 'All') {
-      techniques = techniques.where((t) => t.difficulty == _selectedDifficulty).toList();
+      techniques =
+          techniques.where((t) => t.difficulty == _selectedDifficulty).toList();
     }
-    
+
     return techniques;
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Solving Techniques'),
@@ -42,7 +55,7 @@ class _TechniquesScreenState extends State<TechniquesScreen> {
         children: [
           // Filter Section
           _buildFilterSection(),
-          
+
           // Techniques List
           Expanded(
             child: _filteredTechniques.isEmpty
@@ -51,7 +64,8 @@ class _TechniquesScreenState extends State<TechniquesScreen> {
                     padding: const EdgeInsets.all(16),
                     itemCount: _filteredTechniques.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (_, i) => _techniqueCard(context, _filteredTechniques[i]),
+                    itemBuilder: (_, i) =>
+                        _techniqueCard(context, _filteredTechniques[i]),
                   ),
           ),
         ],
@@ -179,11 +193,11 @@ class _TechniquesScreenState extends State<TechniquesScreen> {
         onTap: () => _openDetail(context, technique),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -198,7 +212,8 @@ class _TechniquesScreenState extends State<TechniquesScreen> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    color:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
@@ -216,9 +231,10 @@ class _TechniquesScreenState extends State<TechniquesScreen> {
                           Expanded(
                             child: Text(
                               technique.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 16,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ),
@@ -243,9 +259,13 @@ class _TechniquesScreenState extends State<TechniquesScreen> {
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -262,7 +282,10 @@ class _TechniquesScreenState extends State<TechniquesScreen> {
                             '${technique.steps.length} steps',
                             style: TextStyle(
                               fontSize: 12,
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.6),
                             ),
                           ),
                         ],
@@ -333,5 +356,4 @@ class _TechniquesScreenState extends State<TechniquesScreen> {
       ),
     );
   }
-
 }

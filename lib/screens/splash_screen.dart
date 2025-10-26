@@ -79,20 +79,20 @@ class _SplashScreenState extends State<SplashScreen>
                       width: 120,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
+                            color: Theme.of(context).colorScheme.shadow.withOpacity(0.3),
                             blurRadius: 10,
                             offset: const Offset(0, 5),
                           ),
                         ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.grid_on,
                         size: 80,
-                        color: Colors.blue,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                     const SizedBox(height: 30),
@@ -101,7 +101,7 @@ class _SplashScreenState extends State<SplashScreen>
                       style: TextStyle(
                         fontSize: 48,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onPrimary,
                         letterSpacing: 2,
                       ),
                     ),
@@ -110,7 +110,7 @@ class _SplashScreenState extends State<SplashScreen>
                       'Challenge Your Mind',
                       style: TextStyle(
                         fontSize: 18,
-                        color: Colors.white.withOpacity(0.8),
+                        color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.8),
                         letterSpacing: 1,
                       ),
                     ),

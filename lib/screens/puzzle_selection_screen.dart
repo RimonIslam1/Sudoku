@@ -51,11 +51,11 @@ class _PuzzleSelectionScreenState extends State<PuzzleSelectionScreen> {
   Widget _buildPuzzleCard(BuildContext context, int number, _PuzzleItem item) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.08),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),

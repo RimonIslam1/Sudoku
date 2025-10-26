@@ -25,120 +25,122 @@ class MainMenuScreen extends StatelessWidget {
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 16),
-                // App Title
-                Text(
-                  'SUDOKU',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 44,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: 2,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Choose Your Challenge',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white.withOpacity(0.85),
-                    letterSpacing: 1,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Menu Buttons
-                _buildMenuButton(
-                  context,
-                  'Difficulties',
-                  Icons.trending_up,
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const DifficultiesScreen(),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _buildMenuButton(
-                  context,
-                  'Rules',
-                  Icons.rule,
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RulesScreen(),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _buildMenuButton(
-                  context,
-                  'Solving Techniques',
-                  Icons.lightbulb_outline,
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const TechniquesScreen(),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _buildMenuButton(
-                  context,
-                  'Solved Puzzles',
-                  Icons.checklist,
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SolvedPuzzlesScreen(),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _buildMenuButton(
-                  context,
-                  'Leaderboard',
-                  Icons.leaderboard,
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LeaderboardScreen(),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _buildMenuButton(
-                  context,
-                  'Settings',
-                  Icons.settings,
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SettingsScreen(),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Footer
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Text(
-                    'Challenge Your Mind',
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 16),
+                  // App Title
+                  Text(
+                    'SUDOKU',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white.withOpacity(0.7),
-                      fontStyle: FontStyle.italic,
+                      fontSize: 44,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 2,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Text(
+                    'Choose Your Challenge',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white.withOpacity(0.85),
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // Menu Buttons
+                  _buildMenuButton(
+                    context,
+                    'Difficulties',
+                    Icons.trending_up,
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DifficultiesScreen(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildMenuButton(
+                    context,
+                    'Rules',
+                    Icons.rule,
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RulesScreen(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildMenuButton(
+                    context,
+                    'Solving Techniques',
+                    Icons.lightbulb_outline,
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const TechniquesScreen(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildMenuButton(
+                    context,
+                    'Solved Puzzles',
+                    Icons.checklist,
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SolvedPuzzlesScreen(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildMenuButton(
+                    context,
+                    'Leaderboard',
+                    Icons.leaderboard,
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LeaderboardScreen(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildMenuButton(
+                    context,
+                    'Settings',
+                    Icons.settings,
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SettingsScreen(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // Footer
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Text(
+                      'Challenge Your Mind',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white.withOpacity(0.7),
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -156,11 +158,11 @@ class MainMenuScreen extends StatelessWidget {
       width: double.infinity,
       constraints: const BoxConstraints(minHeight: 64),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),

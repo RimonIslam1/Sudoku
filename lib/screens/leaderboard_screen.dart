@@ -77,7 +77,15 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             const SizedBox(height: 12),
             Expanded(
               child: _filtered.isEmpty
-                  ? const Center(child: Text('No entries yet'))
+                  ? Center(
+                      child: Text(
+                        'No entries yet',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 16,
+                        ),
+                      ),
+                    )
                   : ListView.separated(
                       itemCount: _filtered.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 8),
@@ -86,7 +94,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                         final rank = index + 1;
                         return Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: Theme.of(context)

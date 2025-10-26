@@ -23,11 +23,11 @@ class ActionButtons extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -98,14 +98,14 @@ class ActionButtons extends StatelessWidget {
         child: Container(
           height: 50,
           decoration: BoxDecoration(
-            color: onPressed != null 
-              ? color.withOpacity(0.1)
-              : Colors.grey.withOpacity(0.1),
+            color: onPressed != null
+                ? color.withOpacity(0.1)
+                : Colors.grey.withOpacity(0.1),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: onPressed != null 
-                ? color.withOpacity(0.3)
-                : Colors.grey.withOpacity(0.3),
+              color: onPressed != null
+                  ? color.withOpacity(0.3)
+                  : Colors.grey.withOpacity(0.3),
               width: 1,
             ),
           ),

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
 class HighlightingConstants {
-  // Highlighting colors
-  static const Color selectedCellColor = Color(0xFF64B5F6); // Darker blue
+  // Highlighting colors - optimized for both light and dark modes
+  static const Color selectedCellColor =
+      Color(0xFF64B5F6); // Blue - works in both modes
   static const Color selectedCellBorderColor = Color(0xFF42A5F5);
-  static const Color rowColumnHighlightColor = Color(0xFFBBDEFB); // Soft blue
-  static const Color sameDigitHighlightColor = Color(0xFFFFF59D); // Soft yellow
-  static const Color boxHighlightColor = Color(0xFFBBDEFB);
+  static const Color rowColumnHighlightColor =
+      Color(0xFF4FC3F7); // Light blue - visible in dark mode
+  static const Color sameDigitHighlightColor =
+      Color(0xFFFF9800); // Bright orange - visible in dark mode
+  static const Color boxHighlightColor = Color(0xFF4FC3F7);
 
   // Animation durations
   static const Duration highlightAnimationDuration =

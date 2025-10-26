@@ -38,7 +38,15 @@ class _SolvedPuzzlesScreenState extends State<SolvedPuzzlesScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: _items.isEmpty
-            ? const Center(child: Text('No solved puzzles yet'))
+            ? Center(
+                child: Text(
+                  'No solved puzzles yet',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 16,
+                  ),
+                ),
+              )
             : ListView.separated(
                 itemCount: _items.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 8),
@@ -46,7 +54,7 @@ class _SolvedPuzzlesScreenState extends State<SolvedPuzzlesScreen> {
                   final p = _items[index];
                   return Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: Theme.of(context)

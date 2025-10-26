@@ -24,43 +24,51 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 8),
-                Text(
-                  'App Settings',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildSettingCard(
-                  context,
-                  'Appearance',
-                  Icons.palette,
-                  [
-                    _buildDarkModeToggle(context),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
+                    horizontal: constraints.maxWidth < 400 ? 6 : 10,
+                    vertical: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    Text(
+                      'App Settings',
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
                     const SizedBox(height: 16),
-                    _buildColorThemeSelector(context),
+                    _buildSettingCard(
+                      context,
+                      'Appearance',
+                      Icons.palette,
+                      [
+                        _buildDarkModeToggle(context),
+                        const SizedBox(height: 16),
+                        _buildColorThemeSelector(context),
+                      ],
+                      constraints,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildSettingCard(
+                      context,
+                      'About',
+                      Icons.info,
+                      [
+                        _buildAboutSection(context),
+                      ],
+                      constraints,
+                    ),
+                    const SizedBox(height: 8),
                   ],
                 ),
-                const SizedBox(height: 16),
-                _buildSettingCard(
-                  context,
-                  'About',
-                  Icons.info,
-                  [
-                    _buildAboutSection(context),
-                  ],
-                ),
-                const SizedBox(height: 8),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
@@ -72,22 +80,23 @@ class SettingsScreen extends StatelessWidget {
     String title,
     IconData icon,
     List<Widget> children,
+    BoxConstraints constraints,
   ) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(constraints.maxWidth < 400 ? 16 : 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -181,41 +190,47 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 15),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: themeProvider.availableColors.map((color) {
-                bool isSelected = themeProvider.primaryColor == color;
-                return GestureDetector(
-                  onTap: () => themeProvider.setPrimaryColor(color),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: isSelected ? Colors.black : Colors.transparent,
-                        width: 3,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: color.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return Wrap(
+                  spacing: constraints.maxWidth < 400 ? 8 : 10,
+                  runSpacing: constraints.maxWidth < 400 ? 8 : 10,
+                  children: themeProvider.availableColors.map((color) {
+                    bool isSelected = themeProvider.primaryColor == color;
+                    return GestureDetector(
+                      onTap: () => themeProvider.setPrimaryColor(color),
+                      child: Container(
+                        width: constraints.maxWidth < 400 ? 36 : 40,
+                        height: constraints.maxWidth < 400 ? 36 : 40,
+                        decoration: BoxDecoration(
+                          color: color,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isSelected
+                                ? Theme.of(context).colorScheme.onSurface
+                                : Colors.transparent,
+                            width: 3,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: color.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: isSelected
-                        ? const Icon(
-                            Icons.check,
-                            color: Colors.white,
-                            size: 20,
-                          )
-                        : null,
-                  ),
+                        child: isSelected
+                            ? const Icon(
+                                Icons.check,
+                                color: Colors.white,
+                                size: 20,
+                              )
+                            : null,
+                      ),
+                    );
+                  }).toList(),
                 );
-              }).toList(),
+              },
             ),
           ],
         );
